@@ -1,0 +1,13 @@
+body {
+    background-image: url(maestraa.jpg);
+}
+
+.contenedor { 
+    color:aliceblue
+}
+
+.img-01 {
+    width: 400px;
+    height: 400px;
+    border-radius: 25px;
+}

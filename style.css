@@ -1,0 +1,9 @@
+.contenedor{
+    background-image: url(maestra.gif);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color:aliceblue;
+
+    height: 750px;
+}
