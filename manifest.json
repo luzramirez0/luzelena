@@ -1,0 +1,21 @@
+{
+  "name": "Despertador Rosa",
+  "short_name": "Alarma Rosa",
+  "description": "Un despertador rosa, lindo y personalizable ♥",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffe0ef",
+  "theme_color": "#ff89c4",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
