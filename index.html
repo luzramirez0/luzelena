@@ -1,21 +1,248 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="author" content="Luz Elena">
-        <meta name="description" content="Proyecto final">
-        <meta name="viewport" content="width=device=width,initial-scale=1.0">
-        <title></title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <div class="contenedor">
-            <center><h1><i>Entrevista a una maestra de primaria</i></h1></center>
-            <center><h2><a href="Biografia del entrevistado.html">Biografia del entrevistado</a><br></h2></center>
-            <center><h2><a href="Preguntas y respuestas.html">Preguntas y respuestas</a><br></h2></center>
-            <center><h2><a href="Recuerdos.html">Recuerdos</a><br></h2></center>
-            <center><h2><a href="Contenido multimedia.html">Contenido multimedia</a><br></h2></center>
-            <center><h2><a href="Conclusion y cierre.html">Conclusion y cierre</a><br></h2></center>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Despertador Rosa 🌸</title>
+<style>
+  :root{--bg:#fff0f6;--card:#ffd6e8;--accent:#ff6fb5;--muted:#8b5a6e}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,var(--bg),#ffeaf5);color:#330b1e}
+  .app{max-width:460px;margin:18px auto;padding:16px}
+  header{display:flex;align-items:center;gap:12px}
+  h1{font-size:20px;margin:0}
+  .subtitle{font-size:13px;color:var(--muted)}
+  .card{background:var(--card);border-radius:14px;padding:14px;margin-top:14px;box-shadow:0 6px 20px rgba(255,110,170,0.08)}
+  label{display:block;font-size:13px;margin-bottom:6px}
+  input[type=time], input[type=range], input[type=file], select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(51,11,30,0.06);background:white}
+  .row{display:flex;gap:8px}
+  .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:10px;border:none;font-weight:600;cursor:pointer}
+  .btn.secondary{background:transparent;border:1px solid rgba(51,11,30,0.06);color:var(--muted);}
+  .time-big{font-size:44px;font-weight:700;letter-spacing:2px}
+  .small{font-size:12px;color:var(--muted)}
+  .center{text-align:center}
+  footer{margin-top:12px;font-size:12px;color:var(--muted);text-align:center}
+  .controls{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:8px}
+  .preview{margin-top:8px}
+  @media (max-width:420px){.app{padding:12px;margin:8px}}
+</style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff89c4">
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div style="width:58px;height:58px;border-radius:12px;background:linear-gradient(180deg,#fff,#ffddee);display:grid;place-items:center;font-size:28px">🌸</div>
+      <div>
+        <h1>Despertador Rosa</h1>
+        <div class="subtitle">Elige tu canción y despierta con cariño 💖</div>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="center">
+        <div id="currentTime" class="time-big">--:--</div>
+        <div class="small">Hora actual</div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="alarmTime">Hora de la alarma</label>
+        <input id="alarmTime" type="time">
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="songFile">Canción personalizada (archivo mp3/ogg)</label>
+        <input id="songFile" type="file" accept="audio/*">
+        <div class="preview small" id="songName">No hay canción seleccionada</div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="playPreview" class="btn secondary">Previsualizar</button>
+          <button id="clearSong" class="btn secondary">Quitar</button>
         </div>
-    </body>
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="vol">Volumen</label>
+        <input id="vol" type="range" min="0" max="1" step="0.01" value="0.8">
+      </div>
+
+      <div class="controls">
+        <div>
+          <button id="setAlarm" class="btn">Activar alarma</button>
+          <button id="stopAlarm" class="btn secondary">Detener</button>
+        </div>
+        <div class="small">Estado: <strong id="status">Inactiva</strong></div>
+      </div>
+
+      <div style="margin-top:12px" class="small">Consejo: para que suene correctamente en la mayoría de celulares, abre la app en el navegador y agrega a la pantalla de inicio (Add to Home Screen). Además debes permitir la reproducción de audio al tocar la pantalla al establecer la alarma.</div>
+    </div>
+
+    <footer>
+      <div>Hecho con 💖 — Guarda esta página en tu pantalla de inicio para usarla como app.</div>
+    </footer>
+  </div>
+
+<script>
+  // Variables
+  const currentTimeEl = document.getElementById('currentTime');
+  const alarmTimeInput = document.getElementById('alarmTime');
+  const songFileInput = document.getElementById('songFile');
+  const songNameEl = document.getElementById('songName');
+  const playPreviewBtn = document.getElementById('playPreview');
+  const clearSongBtn = document.getElementById('clearSong');
+  const setAlarmBtn = document.getElementById('setAlarm');
+  const stopAlarmBtn = document.getElementById('stopAlarm');
+  const statusEl = document.getElementById('status');
+  const volEl = document.getElementById('vol');
+
+  let alarmTime = null;
+  let alarmTimeout = null;
+  let alarmAudio = null;
+  let alarmActive = false;
+
+  // Restaurar desde localStorage
+  function restore(){
+    const savedTime = localStorage.getItem('alarmTime');
+    const vol = localStorage.getItem('alarmVol');
+    if(savedTime) { alarmTimeInput.value = savedTime; alarmTime = savedTime; }
+    if(vol) volEl.value = vol;
+    const songName = localStorage.getItem('songName');
+    if(songName){ songNameEl.textContent = songName; }
+    const hasSong = localStorage.getItem('hasSong');
+    if(hasSong==='true'){
+      // archivo no se puede persistir en todos los navegadores; recomendamos mantener la página abierta
+    }
+  }
+
+  restore();
+
+  // reloj
+  function updateClock(){
+    const now = new Date();
+    currentTimeEl.textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    // comprobar alarma cada minuto
+    if(alarmActive && alarmTime){
+      const target = alarmTime;
+      const cur = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      if(cur === target){ triggerAlarm(); }
+    }
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // selección de canción
+  let selectedFile = null;
+  songFileInput.addEventListener('change', (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    selectedFile = f;
+    songNameEl.textContent = f.name;
+    localStorage.setItem('songName', f.name);
+    localStorage.setItem('hasSong', 'true');
+    // cargar en un objeto URL para reproducir
+    if(alarmAudio){ alarmAudio.pause(); alarmAudio = null; }
+    alarmAudio = new Audio(URL.createObjectURL(f));
+    alarmAudio.loop = true;
+    alarmAudio.volume = parseFloat(volEl.value);
+  });
+
+  clearSongBtn.addEventListener('click', ()=>{
+    selectedFile = null; songFileInput.value = ''; songNameEl.textContent = 'No hay canción seleccionada'; localStorage.removeItem('songName'); localStorage.setItem('hasSong','false');
+    if(alarmAudio){ alarmAudio.pause(); alarmAudio=null; }
+  });
+
+  playPreviewBtn.addEventListener('click', async ()=>{
+    if(!alarmAudio){
+      if(!selectedFile){ alert('Selecciona un archivo de audio primero.'); return; }
+      alarmAudio = new Audio(URL.createObjectURL(selectedFile)); alarmAudio.loop=false; alarmAudio.volume = parseFloat(volEl.value);
+    }
+    try{
+      await alarmAudio.play();
+    }catch(e){ alert('Para reproducir audio en este dispositivo, toca la pantalla primero (restricción del navegador).'); }
+  });
+
+  volEl.addEventListener('input', ()=>{ if(alarmAudio) alarmAudio.volume = parseFloat(volEl.value); localStorage.setItem('alarmVol', volEl.value); });
+
+  // activar/desactivar alarma
+  setAlarmBtn.addEventListener('click', ()=>{
+    const t = alarmTimeInput.value;
+    if(!t){ alert('Elige una hora para la alarma.'); return; }
+    alarmTime = t;
+    alarmActive = true;
+    statusEl.textContent = 'Activa a las ' + alarmTime;
+    localStorage.setItem('alarmTime', alarmTime);
+    localStorage.setItem('alarmActive','true');
+    alert('Alarma activada. Mantén abierta esta página o agrégala a la pantalla de inicio para mayor fiabilidad.');
+  });
+
+  stopAlarmBtn.addEventListener('click', ()=>{
+    stopRinging(); alarmActive = false; statusEl.textContent='Inactiva'; localStorage.setItem('alarmActive','false');
+  });
+
+  function triggerAlarm(){
+    if(!alarmActive) return;
+    // evitar repetición si la alarma ya está sonando
+    if(document.body.classList.contains('ringing')) return;
+    document.body.classList.add('ringing');
+    statusEl.textContent = 'Suena ahora ⏰';
+
+    // preparar audio
+    if(!alarmAudio){
+      // si no hay canción personalizada, usar beep generado
+      alarmAudio = new Audio();
+      // generar beep con dataURL corto (silbido simple) - pero en móviles es mejor tener archivo
+      const beep = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
+      alarmAudio = beep; alarmAudio.loop = true; alarmAudio.volume = parseFloat(volEl.value);
+    }
+    alarmAudio.loop = true; alarmAudio.volume = parseFloat(volEl.value);
+    alarmAudio.play().catch(()=>{
+      // si no puede reproducir automáticamente, pedir interacción
+      alert('Para que suene la alarma, toca la pantalla o presiona Reproducir. Esto es una restricción del navegador móvil.');
+    });
+
+    // vibración (si está disponible)
+    if(navigator.vibrate){ navigator.vibrate([500,200,500,200,500]); }
+
+    // repetir notificaciones visuales
+    let flashes = 0;
+    const flashInt = setInterval(()=>{
+      document.body.style.background = (flashes%2===0) ? '#fff6fb' : '#ffe9f7';
+      flashes++;
+      if(!document.body.classList.contains('ringing')){ clearInterval(flashInt); document.body.style.background=''; }
+    },700);
+  }
+
+  function stopRinging(){
+    document.body.classList.remove('ringing');
+    if(alarmAudio){ try{ alarmAudio.pause(); alarmAudio.currentTime = 0; }catch(e){} }
+    if(navigator.vibrate) navigator.vibrate(0);
+    statusEl.textContent = 'Inactiva';
+  }
+
+  // advertencia importante: los navegadores móviles pueden pausar/hibernar pestañas en segundo plano
+  // recomendamos: 1) Añadir a pantalla de inicio (PWA) 2) Mantener la pestaña abierta o configurar una canción corta que puedas previsualizar antes
+
+  // quitar estado de ringing si el usuario toca detener
+  document.addEventListener('visibilitychange', ()=>{
+    // si la pestaña vuelve y está sonando, detener si el usuario solicita
+  });
+
+  // permitir desbloqueo de audio con primer toque (para evitar restricciones)
+  document.addEventListener('click', ()=>{ if(alarmAudio && alarmAudio.paused) { alarmAudio.play().then(()=>alarmAudio.pause()).catch(()=>{}); } }, {once:true});
+
+  // Guardar preferencias al salir
+  window.addEventListener('beforeunload', ()=>{
+    localStorage.setItem('alarmTime', alarmTimeInput.value || '');
+    localStorage.setItem('alarmVol', volEl.value);
+    // Nota: los archivos locales no pueden guardarse en localStorage de forma confiable en todos los navegadores
+  });
+
+  // Mensaje rápido para instalación
+  // (no es un PWA completo, pero el usuario puede usar "Agregar a pantalla de inicio")
+</script>
+</body>
 </html>
